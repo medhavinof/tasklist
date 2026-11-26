@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light" data-accent="indigo">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Task List</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section id="loading-section" class="card loading-card">
+        <p class="muted-text">Memuat aplikasi...</p>
+      </section>
+
+      <section id="auth-section" class="card auth-card" hidden>
+        <header class="brand-header">
+          <h1 class="brand-title">Simple Task List</h1>
+          <p class="brand-subtitle">Catat dan selesaikan tugas harian Anda secara lokal.</p>
+        </header>
+
+        <div id="local-accounts-box" class="local-accounts-box" hidden>
+          <div class="local-accounts-header">
+            <span class="local-accounts-title">Profil Lokal di Perangkat</span>
+            <span class="local-accounts-hint">Klik untuk masuk cepat</span>
+          </div>
+          <div id="local-accounts-list" class="local-accounts-list"></div>
+        </div>
+
+        <div class="auth-tabs" role="tablist" aria-label="Autentikasi akun lokal">
+          <button
+            type="button"
+            class="tab-btn is-active"
+            data-auth-tab="login"
+            role="tab"
+            aria-selected="true"
+          >
+            Masuk
+          </button>
+          <button
+            type="button"
+            class="tab-btn"
+            data-auth-tab="register"
+            role="tab"
+            aria-selected="false"
+          >
+            Daftar Akun
+          </button>
+        </div>
+
+        <form id="auth-form" class="auth-form" novalidate>
+          <div id="register-extra-top" class="register-extra" hidden>
+            <div class="field">
+              <label for="auth-display-name">Nama Tampilan (Opsional)</label>
+              <input
+                id="auth-display-name"
+                type="text"
+                maxlength="50"
+                placeholder="Contoh: Budi Pratama"
+                autocomplete="name"
+              />
+            </div>
+
+            <div class="field">
+              <span class="field-label-text">Pilih Avatar Emoji (Opsional)</span>
+              <div id="register-avatar-presets" class="emoji-preset-row"></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="auth-username">Username</label>
+            <input
+              id="auth-username"
+              name="username"
+              type="text"
+              autocomplete="username"
+              placeholder="Contoh: budi_pratama"
+              minlength="3"
+              maxlength="32"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="auth-password">Password atau PIN (4–6 digit)</label>
+            <input
+              id="auth-password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Password min. 6 karakter atau PIN 4–6 digit"
+              minlength="4"
+              maxlength="128"
+              required
+            />
+          </div>
+
+          <div id="register-extra-sec" class="register-extra" hidden>
+            <div class="field">
+              <label for="auth-sec-question">Pertanyaan Keamanan (Opsional untuk pemulihan)</label>
+              <input
+                id="auth-sec-question"
+                type="text"
+                maxlength="160"
+                placeholder="Misal: Apa nama hewan peliharaan pertama?"
+              />
+            </div>
+            <div class="field">
+              <label for="auth-sec-answer">Jawaban Keamanan</label>
+              <input
+                id="auth-sec-answer"
+                type="text"
+                maxlength="100"
+                placeholder="Jawaban rahasia Anda"
+                autocomplete="off"
+              />
+            </div>
+          </div>
+
+          <p id="auth-hint" class="field-hint" hidden>
+            Akun, foto profil, dan preferensi disimpan lokal di SQLite perangkat ini.
+          </p>
+
+          <p id="auth-error" class="error-banner" role="alert" hidden></p>
+
+          <button id="auth-submit-btn" type="submit" class="btn btn-primary btn-block">
+            Masuk
+          </button>
+
+          <div id="login-links-row" class="auth-links-row">
+            <button id="open-recover-btn" type="button" class="link-btn">
+              Lupa Password / PIN?
+            </button>
+          </div>
+        </form>
+
+        <form id="recover-form" class="auth-form" hidden novalidate>
+          <div class="recover-header">
+            <h2 class="recover-title">Pulihkan Akses Lokal</h2>
+            <p class="field-hint">
+              Jawab pertanyaan keamanan yang telah diatur pada profil Anda.
+            </p>
+          </div>
+
+          <div class="field">
+            <label for="recover-username">Username</label>
+            <div class="inline-control">
+              <input
+                id="recover-username"
+                type="text"
+                placeholder="Masukkan username akun"
+                autocomplete="username"
+              />
+              <button id="recover-find-btn" type="button" class="btn btn-ghost btn-sm">
+                Cek Pertanyaan
+              </button>
+            </div>
+          </div>
+
+          <div id="recover-step-2" class="recover-step-2" hidden>
+            <div class="recover-question-box">
+              <span class="field-label-text">Pertanyaan Keamanan</span>
+              <p id="recover-question-text" class="recover-question-text"></p>
+            </div>
+
+            <div class="field">
+              <label for="recover-answer">Jawaban Rahasia</label>
+              <input
+                id="recover-answer"
+                type="text"
+                placeholder="Masukkan jawaban Anda"
+                autocomplete="off"
+              />
+            </div>
+
+            <div class="field">
+              <label for="recover-new-password">Password / PIN Baru</label>
+              <input
+                id="recover-new-password"
+                type="password"
+                placeholder="Password min. 6 karakter atau PIN 4–6 digit"
+                autocomplete="new-password"
+              />
+            </div>
+          </div>
+
+          <p id="recover-error" class="error-banner" role="alert" hidden></p>
+
+          <div class="recover-actions">
+            <button id="recover-back-btn" type="button" class="btn btn-ghost">Kembali</button>
+            <button id="recover-submit-btn" type="submit" class="btn btn-primary" hidden>
+              Simpan &amp; Masuk
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section id="lock-screen" class="card auth-card lock-card" hidden>
+        <div class="lock-profile">
+          <div class="lock-badge" aria-hidden="true">
+            <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </div>
+          <div id="lock-avatar" class="avatar-circle avatar-lg"></div>
+          <h2 id="lock-display-name" class="lock-name"></h2>
+          <p id="lock-username" class="muted-text"></p>
+        </div>
+
+        <p class="field-hint lock-desc">
+          Aplikasi dikunci otomatis karena tidak ada aktivitas. Masukkan Password atau PIN untuk melanjutkan.
+        </p>
+
+        <form id="lock-form" class="auth-form" novalidate>
+          <div class="field">
+            <label for="lock-password-input">Password / PIN</label>
+            <input
+              id="lock-password-input"
+              type="password"
+              placeholder="Masukkan Password atau PIN Anda"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+
+          <p id="lock-error" class="error-banner" role="alert" hidden></p>
+
+          <button type="submit" class="btn btn-primary btn-block">Buka Kunci</button>
+        </form>
+
+        <div class="lock-footer-actions">
+          <button id="lock-recover-btn" type="button" class="link-btn">
+            Lupa Password / PIN?
+          </button>
+          <button id="lock-switch-btn" type="button" class="link-btn">
+            Ganti Akun
+          </button>
+        </div>
+      </section>
+
+      <section id="app-section" class="card app-card" hidden>
+        <header class="app-header">
+          <div>
+            <h1 class="app-title">Daftar Tugas</h1>
+            <p class="app-subtitle">Kelola prioritas, kategori, sub-tugas, dan tenggat harian Anda</p>
+          </div>
+          <div class="user-bar">
+            <button
+              id="quick-theme-btn"
+              type="button"
+              class="btn btn-ghost btn-sm btn-icon-only"
+              title="Ganti tema Terang / Gelap"
+              aria-label="Aktifkan mode gelap"
+            >
+              <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+              </svg>
+            </button>
+
+            <div id="profile-dropdown" class="profile-dropdown">
+              <button
+                id="open-profile-pill"
+                type="button"
+                class="profile-chip"
+                aria-haspopup="menu"
+                aria-expanded="false"
+                aria-controls="profile-dropdown-menu"
+                title="Menu Profil &amp; Akun"
+              >
+                <span id="header-avatar" class="avatar-circle avatar-sm"></span>
+                <span class="profile-chip-text">
+                  <strong id="header-display-name"></strong>
+                  <small id="current-username"></small>
+                </span>
+                <svg class="ui-icon profile-chip-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+
+              <div
+                id="profile-dropdown-menu"
+                class="profile-dropdown-menu"
+                role="menu"
+                aria-label="Menu akun dan pengaturan"
+                hidden
+              >
+                <button type="button" class="dropdown-item" role="menuitem" data-menu-settings="profil">
+                  <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  <span>Profil Saya</span>
+                </button>
+                <button type="button" class="dropdown-item" role="menuitem" data-menu-settings="keamanan">
+                  <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+                  </svg>
+                  <span>Keamanan &amp; Auto-Lock</span>
+                </button>
+                <button type="button" class="dropdown-item" role="menuitem" data-menu-settings="tampilan">
+                  <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+                    <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+                    <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+                    <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+                  </svg>
+                  <span>Tampilan &amp; Aturan</span>
+                </button>
+                <button type="button" class="dropdown-item" role="menuitem" data-menu-settings="data">
+                  <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <ellipse cx="12" cy="5" rx="9" ry="3" />
+                    <path d="M3 5v14a9 3 0 0 0 18 0V5" />
+                    <path d="M3 12a9 3 0 0 0 18 0" />
+                  </svg>
+                  <span>Data &amp; Cadangan</span>
+                </button>
+                <button id="menu-categories-btn" type="button" class="dropdown-item" role="menuitem">
+                  <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
+                    <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
+                  </svg>
+                  <span>Kelola Kategori</span>
+                </button>
+
+                <div class="dropdown-divider" role="separator"></div>
+
+                <button id="menu-lock-btn" type="button" class="dropdown-item" role="menuitem">
+                  <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  <span>Kunci Layar</span>
+                </button>
+                <button id="logout-btn" type="button" class="dropdown-item dropdown-item-danger" role="menuitem">
+                  <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                  <span>Ganti Akun / Keluar</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <section id="dashboard-panel" class="dashboard-panel" aria-label="Dashboard tugas">
+          <div class="dashboard-header">
+            <h2 class="dashboard-heading">Dashboard Task</h2>
+            <button id="toggle-dashboard-btn" type="button" class="btn btn-ghost btn-sm btn-icon-inline">
+              <span>Sembunyikan</span>
+            </button>
+          </div>
+
+          <div id="dashboard-body" class="dashboard-body">
+            <div class="dashboard-grid">
+              <button type="button" class="metric-card" data-dash-action="all">
+                <div class="metric-top">
+                  <span class="metric-label-row">
+                    <svg class="ui-icon metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="m9 12 2 2 4-4" />
+                    </svg>
+                    <span class="metric-label">Progress Selesai</span>
+                  </span>
+                  <span id="dash-progress-pct" class="metric-accent">0%</span>
+                </div>
+                <strong id="dash-progress-text" class="metric-value">0 / 0</strong>
+                <div class="progress-track" aria-hidden="true">
+                  <div id="dash-progress-bar" class="progress-fill" style="width: 0%"></div>
+                </div>
+              </button>
+
+              <button type="button" class="metric-card" data-dash-action="today">
+                <span class="metric-label-row">
+                  <svg class="ui-icon metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M8 2v4" />
+                    <path d="M16 2v4" />
+                    <rect width="18" height="18" x="3" y="4" rx="2" />
+                    <path d="M3 10h18" />
+                  </svg>
+                  <span class="metric-label">Hari Ini</span>
+                </span>
+                <strong id="dash-due-today" class="metric-value">0</strong>
+                <span class="metric-hint">Jatuh tempo hari ini</span>
+              </button>
+
+              <button type="button" class="metric-card metric-card-danger" data-dash-action="overdue">
+                <span class="metric-label-row">
+                  <svg class="ui-icon metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                    <path d="M12 9v4" />
+                    <path d="M12 17h.01" />
+                  </svg>
+                  <span class="metric-label">Terlambat</span>
+                </span>
+                <strong id="dash-overdue" class="metric-value">0</strong>
+                <span class="metric-hint">Melewati tenggat</span>
+              </button>
+
+              <button type="button" class="metric-card metric-card-high" data-dash-action="high">
+                <span class="metric-label-row">
+                  <svg class="ui-icon metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                    <line x1="4" x2="4" y1="22" y2="15" />
+                  </svg>
+                  <span class="metric-label">Prioritas Tinggi</span>
+                </span>
+                <strong id="dash-high-priority" class="metric-value">0</strong>
+                <span class="metric-hint">Tugas aktif penting</span>
+              </button>
+            </div>
+
+            <div id="dashboard-categories" class="dashboard-categories" hidden></div>
+          </div>
+        </section>
+
+        <form id="add-task-form" class="add-task-form" novalidate>
+          <div class="add-task-main">
+            <label for="new-task-input" class="sr-only">Judul tugas baru</label>
+            <input
+              id="new-task-input"
+              type="text"
+              placeholder="Tulis tugas baru lalu tekan Enter..."
+              maxlength="200"
+              autocomplete="off"
+            />
+            <button
+              id="toggle-new-desc-btn"
+              type="button"
+              class="btn btn-ghost btn-icon-inline"
+              title="Tambahkan deskripsi tugas"
+            >
+              <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14" />
+                <path d="M12 5v14" />
+              </svg>
+              <span>Deskripsi</span>
+            </button>
+            <button type="submit" class="btn btn-primary btn-icon-inline">
+              <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14" />
+                <path d="M12 5v14" />
+              </svg>
+              <span>Tambah</span>
+            </button>
+          </div>
+
+          <div id="new-desc-box" class="new-desc-box" hidden>
+            <label for="new-task-description" class="sr-only">Deskripsi tugas baru</label>
+            <textarea
+              id="new-task-description"
+              rows="3"
+              maxlength="2000"
+              placeholder="Catatan konteks (opsional): paragraf, tautan https://..., atau daftar poin diawali '- '"
+            ></textarea>
+          </div>
+
+          <div class="add-task-options add-task-options-2col">
+            <div class="option-group">
+              <label for="new-task-priority">Prioritas</label>
+              <select id="new-task-priority" aria-label="Prioritas tugas baru">
+                <option value="medium" selected>Sedang</option>
+                <option value="high">Tinggi</option>
+                <option value="low">Rendah</option>
+              </select>
+            </div>
+
+            <div class="option-group">
+              <label for="new-task-due">Tenggat</label>
+              <div class="inline-control">
+                <input
+                  id="new-task-due"
+                  type="datetime-local"
+                  aria-label="Tenggat waktu tugas baru"
+                />
+                <button
+                  id="clear-new-due-btn"
+                  type="button"
+                  class="btn btn-ghost btn-sm btn-icon-only"
+                  title="Kosongkan tenggat waktu"
+                  aria-label="Kosongkan tenggat waktu"
+                  hidden
+                >
+                  <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="category-picker-section">
+            <div class="category-picker-header">
+              <span class="field-label-text">Kategori (bisa pilih lebih dari satu)</span>
+              <button
+                id="open-categories-btn"
+                type="button"
+                class="btn btn-ghost btn-xs btn-icon-inline"
+                title="Buat, ubah warna/ikon, atau hapus kategori"
+              >
+                <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
+                  <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
+                </svg>
+                <span>Kelola Kategori</span>
+              </button>
+            </div>
+            <div
+              id="new-task-categories-picker"
+              class="category-picker"
+              role="group"
+              aria-label="Pilih kategori tugas baru"
+            ></div>
+          </div>
+        </form>
+
+        <p id="task-error" class="error-banner" role="alert" hidden></p>
+
+        <div class="toolbar">
+          <nav class="filter-bar" aria-label="Filter status tugas">
+            <button type="button" class="filter-btn is-active" data-filter="all">
+              Semua <span id="count-all" class="count-badge">0</span>
+            </button>
+            <button type="button" class="filter-btn" data-filter="active">
+              Aktif <span id="count-active" class="count-badge">0</span>
+            </button>
+            <button type="button" class="filter-btn" data-filter="completed">
+              Selesai <span id="count-completed" class="count-badge">0</span>
+            </button>
+          </nav>
+
+          <div class="filter-controls">
+            <div id="category-filter-dropdown" class="multi-filter-dropdown">
+              <button
+                id="filter-category-btn"
+                type="button"
+                class="btn btn-ghost btn-sm btn-icon-inline"
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-controls="filter-category-popover"
+              >
+                <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                </svg>
+                <span id="filter-category-label">Semua Kategori</span>
+              </button>
+
+              <div
+                id="filter-category-popover"
+                class="filter-popover"
+                role="region"
+                aria-label="Filter multi-kategori"
+                hidden
+              >
+                <div class="filter-popover-header">
+                  <span class="filter-popover-title">Pilih Kategori</span>
+                  <button id="clear-cat-filter-btn" type="button" class="link-btn">
+                    Reset
+                  </button>
+                </div>
+
+                <div id="filter-mode-row" class="filter-mode-row" hidden>
+                  <span class="field-hint">Cocokkan:</span>
+                  <div class="mode-toggle" role="group" aria-label="Mode filter kategori">
+                    <button type="button" class="mode-btn is-active" data-cat-mode="and">
+                      DAN (Semua)
+                    </button>
+                    <button type="button" class="mode-btn" data-cat-mode="or">
+                      ATAU (Salah satu)
+                    </button>
+                  </div>
+                </div>
+
+                <div id="filter-category-options" class="filter-category-options"></div>
+              </div>
+            </div>
+            <select id="filter-priority" aria-label="Filter prioritas">
+              <option value="all">Semua Prioritas</option>
+              <option value="high">Prioritas Tinggi</option>
+              <option value="medium">Prioritas Sedang</option>
+              <option value="low">Prioritas Rendah</option>
+            </select>
+            <select id="filter-sort" aria-label="Urutkan tugas">
+              <option value="newest">Terbaru</option>
+              <option value="due_asc">Tenggat Terdekat</option>
+              <option value="priority_desc">Prioritas Tertinggi</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="preferences-strip">
+          <label
+            class="auto-complete-setting"
+            title="Jika aktif: semua sub-tugas selesai akan otomatis menandai tugas utama selesai, dan mencentang tugas utama akan menyelesaikan semua sub-tugas"
+          >
+            <input id="auto-complete-toggle" type="checkbox" checked />
+            <span>Selesai otomatis (sinkronisasi tugas utama &amp; sub-tugas)</span>
+          </label>
+        </div>
+
+        <div id="active-filters-bar" class="active-filters-bar" hidden>
+          <span id="active-filters-text" class="active-filters-text"></span>
+          <button id="reset-filters-btn" type="button" class="btn btn-ghost btn-sm">
+            Reset Filter
+          </button>
+        </div>
+
+        <ul id="task-list" class="task-list" aria-live="polite"></ul>
+
+        <div id="empty-state" class="empty-state" hidden>
+          <p id="empty-state-text"></p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Settings & Profile Modal -->
+    <div
+      id="settings-modal"
+      class="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settings-modal-title"
+      hidden
+    >
+      <div class="modal-card">
+        <header class="modal-header">
+          <h2 id="settings-modal-title" class="modal-title">Profil &amp; Pengaturan Lokal</h2>
+          <button id="close-settings-btn" type="button" class="btn btn-ghost btn-sm btn-icon-inline">
+            <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+            <span>Tutup</span>
+          </button>
+        </header>
+
+        <div class="modal-tabs" role="tablist" aria-label="Kategori pengaturan">
+          <button type="button" class="modal-tab-btn is-active" data-settings-tab="profil">
+            Profil
+          </button>
+          <button type="button" class="modal-tab-btn" data-settings-tab="keamanan">
+            Keamanan
+          </button>
+          <button type="button" class="modal-tab-btn" data-settings-tab="tampilan">
+            Tampilan &amp; Aturan
+          </button>
+          <button type="button" class="modal-tab-btn" data-settings-tab="data">
+            Data &amp; Cadangan
+          </button>
+        </div>
+
+        <p id="settings-error" class="error-banner" role="alert" hidden></p>
+        <p id="settings-success" class="success-banner" role="status" hidden></p>
+
+        <!-- Tab 1: Profil -->
+        <div class="settings-panel" data-settings-panel="profil">
+          <div class="avatar-editor">
+            <div id="settings-avatar-preview" class="avatar-circle avatar-lg"></div>
+            <div class="avatar-editor-controls">
+              <div class="avatar-upload-row">
+                <label for="avatar-file-input" class="btn btn-ghost btn-sm">
+                  Unggah Foto
+                </label>
+                <input
+                  id="avatar-file-input"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  hidden
+                />
+                <button id="remove-avatar-btn" type="button" class="btn btn-ghost btn-sm">
+                  Hapus Avatar
+                </button>
+              </div>
+              <div id="settings-avatar-presets" class="emoji-preset-row"></div>
+            </div>
+          </div>
+
+          <form id="profile-identity-form" class="settings-form" novalidate>
+            <div class="field">
+              <label for="settings-display-name">Nama Tampilan</label>
+              <input id="settings-display-name" type="text" maxlength="50" required />
+            </div>
+            <div class="field">
+              <label for="settings-username">Username Unik</label>
+              <input
+                id="settings-username"
+                type="text"
+                minlength="3"
+                maxlength="32"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-primary">Simpan Profil</button>
+          </form>
+        </div>
+
+        <!-- Tab 2: Keamanan -->
+        <div class="settings-panel" data-settings-panel="keamanan" hidden>
+          <form id="change-password-form" class="settings-form settings-box" novalidate>
+            <h3 class="settings-box-title">Ubah Password / PIN</h3>
+            <div class="field">
+              <label for="sec-current-password">Password / PIN Saat Ini</label>
+              <input id="sec-current-password" type="password" required />
+            </div>
+            <div class="field">
+              <label for="sec-new-password">Password / PIN Baru (min. 6 char atau PIN 4–6 digit)</label>
+              <input id="sec-new-password" type="password" required />
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">Perbarui Password / PIN</button>
+          </form>
+
+          <form id="security-question-form" class="settings-form settings-box" novalidate>
+            <div class="settings-box-header">
+              <h3 class="settings-box-title">Pertanyaan Keamanan</h3>
+              <span id="sec-question-status" class="badge badge-category"></span>
+            </div>
+            <div class="field">
+              <label for="sec-question-input">Pertanyaan Rahasia</label>
+              <input
+                id="sec-question-input"
+                type="text"
+                maxlength="160"
+                placeholder="Misal: Apa nama hewan peliharaan pertama?"
+                required
+              />
+            </div>
+            <div class="field">
+              <label for="sec-answer-input">Jawaban Rahasia Baru</label>
+              <input
+                id="sec-answer-input"
+                type="text"
+                maxlength="100"
+                placeholder="Masukkan jawaban rahasia"
+                autocomplete="off"
+                required
+              />
+            </div>
+            <div class="field">
+              <label for="sec-question-verify-pass">Konfirmasi Password / PIN Saat Ini</label>
+              <input id="sec-question-verify-pass" type="password" required />
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">Simpan Pertanyaan Keamanan</button>
+          </form>
+
+          <div class="settings-box">
+            <h3 class="settings-box-title">Kunci Otomatis (Auto-Lock)</h3>
+            <p class="field-hint">
+              Mengunci tampilan tugas secara otomatis jika tidak ada aktivitas.
+            </p>
+            <div class="inline-control">
+              <select id="setting-auto-lock" aria-label="Durasi Kunci Otomatis">
+                <option value="0">Nonaktif</option>
+                <option value="1">Setelah 1 menit tidak aktif</option>
+                <option value="5">Setelah 5 menit tidak aktif</option>
+                <option value="15">Setelah 15 menit tidak aktif</option>
+                <option value="30">Setelah 30 menit tidak aktif</option>
+              </select>
+              <button id="lock-now-btn" type="button" class="btn btn-ghost btn-sm btn-icon-inline">
+                <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                <span>Kunci Sekarang</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Tampilan & Aturan -->
+        <div class="settings-panel" data-settings-panel="tampilan" hidden>
+          <div class="settings-box">
+            <h3 class="settings-box-title">Tema Aplikasi</h3>
+            <div class="theme-choice-row">
+              <button type="button" class="choice-btn" data-theme-choice="light">
+                <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4" />
+                  <path d="M12 2v2" />
+                  <path d="M12 20v2" />
+                  <path d="m4.93 4.93 1.41 1.41" />
+                  <path d="m17.66 17.66 1.41 1.41" />
+                  <path d="M2 12h2" />
+                  <path d="M20 12h2" />
+                  <path d="m6.34 17.66-1.41 1.41" />
+                  <path d="m19.07 4.93-1.41 1.41" />
+                </svg>
+                <span>Mode Terang (Light)</span>
+              </button>
+              <button type="button" class="choice-btn" data-theme-choice="dark">
+                <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                </svg>
+                <span>Mode Gelap (Dark)</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="settings-box">
+            <h3 class="settings-box-title">Warna Aksen</h3>
+            <div class="accent-choice-row">
+              <button type="button" class="accent-swatch" data-accent-choice="indigo">
+                <span class="swatch-dot" style="background: #4f46e5"></span> Indigo
+              </button>
+              <button type="button" class="accent-swatch" data-accent-choice="blue">
+                <span class="swatch-dot" style="background: #2563eb"></span> Biru
+              </button>
+              <button type="button" class="accent-swatch" data-accent-choice="emerald">
+                <span class="swatch-dot" style="background: #047857"></span> Zamrud
+              </button>
+              <button type="button" class="accent-swatch" data-accent-choice="rose">
+                <span class="swatch-dot" style="background: #be123c"></span> Mawar
+              </button>
+              <button type="button" class="accent-swatch" data-accent-choice="amber">
+                <span class="swatch-dot" style="background: #b45309"></span> Amber
+              </button>
+            </div>
+          </div>
+
+          <div class="settings-box">
+            <h3 class="settings-box-title">Aturan Sub-Task</h3>
+            <label class="auto-complete-setting">
+              <input id="settings-auto-complete-toggle" type="checkbox" checked />
+              <span>Otomatis selesaikan tugas utama saat progres sub-task mencapai 100%</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Tab 4: Data & Cadangan -->
+        <div class="settings-panel" data-settings-panel="data" hidden>
+          <div class="settings-box">
+            <h3 class="settings-box-title">Export Cadangan (.json)</h3>
+            <p class="field-hint">
+              Unduh seluruh profil, kategori, tugas, deskripsi, dan sub-tugas dalam satu file .json.
+            </p>
+            <button id="export-backup-btn" type="button" class="btn btn-primary btn-sm btn-icon-inline">
+              <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" x2="12" y1="15" y2="3" />
+              </svg>
+              <span>Unduh Backup (.json)</span>
+            </button>
+          </div>
+
+          <form id="import-backup-form" class="settings-form settings-box" novalidate>
+            <h3 class="settings-box-title">Import / Restore (.json)</h3>
+            <div class="field">
+              <label for="import-file-input">Pilih File Cadangan (.json)</label>
+              <input id="import-file-input" type="file" accept=".json,application/json" required />
+            </div>
+            <div class="import-mode-row">
+              <label class="radio-label">
+                <input type="radio" name="import-mode" value="merge" checked />
+                <span>Gabung ke tugas saat ini</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="import-mode" value="replace" />
+                <span>Timpa data tugas &amp; preferensi</span>
+              </label>
+            </div>
+            <button type="submit" class="btn btn-ghost btn-sm btn-icon-inline">
+              <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" x2="12" y1="3" y2="15" />
+              </svg>
+              <span>Import File Cadangan</span>
+            </button>
+          </form>
+
+          <form id="reset-tasks-form" class="settings-form settings-box settings-box-warning" novalidate>
+            <h3 class="settings-box-title">Reset Data Tugas</h3>
+            <p class="field-hint">
+              Menghapus semua daftar tugas dan sub-tugas tanpa menghapus akun profil Anda.
+            </p>
+            <div class="inline-control">
+              <input
+                id="reset-tasks-password"
+                type="password"
+                placeholder="Konfirmasi Password / PIN"
+                required
+              />
+              <button type="submit" class="btn btn-ghost btn-sm">Reset Semua Tugas</button>
+            </div>
+          </form>
+
+          <form id="delete-profile-form" class="settings-form settings-box settings-box-danger" novalidate>
+            <h3 class="settings-box-title">Hapus Profil Lokal</h3>
+            <p class="field-hint">
+              Menghapus akun profil beserta seluruh data tugas dari perangkat ini secara permanen.
+            </p>
+            <div class="inline-control">
+              <input
+                id="delete-profile-password"
+                type="password"
+                placeholder="Konfirmasi Password / PIN"
+                required
+              />
+              <button type="submit" class="btn btn-danger btn-sm">Hapus Profil Permanen</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Manage Categories Modal -->
+    <div
+      id="categories-modal"
+      class="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="categories-modal-title"
+      hidden
+    >
+      <div class="modal-card">
+        <header class="modal-header">
+          <h2 id="categories-modal-title" class="modal-title">Kelola Kategori Lokal</h2>
+          <button id="close-categories-btn" type="button" class="btn btn-ghost btn-sm btn-icon-inline">
+            <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+            <span>Tutup</span>
+          </button>
+        </header>
+
+        <p id="cat-modal-error" class="error-banner" role="alert" hidden></p>
+        <p id="cat-modal-success" class="success-banner" role="status" hidden></p>
+
+        <form id="create-category-form" class="settings-form settings-box" novalidate>
+          <h3 class="settings-box-title">Buat Kategori Baru</h3>
+          <div class="field">
+            <label for="cat-create-name">Nama Kategori</label>
+            <input
+              id="cat-create-name"
+              type="text"
+              maxlength="32"
+              placeholder="Contoh: Kuliah, Urgent, Proyek..."
+              autocomplete="off"
+              required
+            />
+          </div>
+          <div class="cat-style-grid">
+            <div class="field">
+              <span class="field-label-text">Warna Label</span>
+              <div id="cat-create-colors" class="cat-color-row"></div>
+            </div>
+            <div class="field">
+              <span class="field-label-text">Ikon Pembeda</span>
+              <div id="cat-create-icons" class="cat-icon-row"></div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm btn-icon-inline">
+            <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14" />
+              <path d="M12 5v14" />
+            </svg>
+            <span>Tambah Kategori</span>
+          </button>
+        </form>
+
+        <div class="manage-categories-section">
+          <h3 class="detail-section-title">Daftar Kategori Profil Ini</h3>
+          <p class="field-hint">
+            Menghapus kategori akan melepas label tersebut dari tugas tanpa menghapus tugasnya.
+          </p>
+          <ul id="manage-categories-list" class="manage-categories-list"></ul>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/js/main.js"></script>
+  </body>
+</html>

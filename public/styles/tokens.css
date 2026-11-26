@@ -1,0 +1,132 @@
+:root {
+  --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --bg: #f8fafc;
+  --bg-glow: #eef2ff;
+  --surface: #ffffff;
+  --surface-subtle: #f1f5f9;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --text: #0f172a;
+  --text-muted: #475569;
+  --text-completed: #64748b;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-soft: #eef2ff;
+  --primary-text: #4338ca;
+  --ring: #4f46e5;
+  --danger: #dc2626;
+  --danger-soft: #fef2f2;
+  --danger-border: #fecaca;
+  --warning: #b45309;
+  --warning-soft: #fffbeb;
+  --info: #0369a1;
+  --info-soft: #f0f9ff;
+  --success: #15803d;
+  --success-soft: #f0fdf4;
+  --success-text: #15803d;
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 12px 28px rgba(15, 23, 42, 0.06);
+  --radius: 14px;
+}
+
+:root[data-theme='dark'] {
+  --bg: #0b1120;
+  --bg-glow: #172554;
+  --surface: #111827;
+  --surface-subtle: #1e293b;
+  --border: #334155;
+  --border-strong: #475569;
+  --text: #f8fafc;
+  --text-muted: #cbd5e1;
+  --text-completed: #94a3b8;
+  --danger: #f87171;
+  --danger-soft: rgba(220, 38, 38, 0.16);
+  --danger-border: rgba(248, 113, 113, 0.35);
+  --warning: #fbbf24;
+  --warning-soft: rgba(217, 119, 6, 0.16);
+  --info: #38bdf8;
+  --info-soft: rgba(14, 165, 233, 0.15);
+  --success: #22c55e;
+  --success-soft: rgba(22, 163, 74, 0.16);
+  --success-text: #4ade80;
+  --shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+}
+
+:root[data-accent='indigo'] {
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-soft: rgba(79, 70, 229, 0.13);
+  --primary-text: #4338ca;
+  --ring: #4f46e5;
+}
+
+:root[data-accent='blue'] {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-soft: rgba(37, 99, 235, 0.13);
+  --primary-text: #1d4ed8;
+  --ring: #2563eb;
+}
+
+:root[data-accent='emerald'] {
+  --primary: #047857;
+  --primary-hover: #065f46;
+  --primary-soft: rgba(4, 120, 87, 0.13);
+  --primary-text: #047857;
+  --ring: #047857;
+}
+
+:root[data-accent='rose'] {
+  --primary: #be123c;
+  --primary-hover: #9f1239;
+  --primary-soft: rgba(190, 18, 60, 0.13);
+  --primary-text: #be123c;
+  --ring: #be123c;
+}
+
+:root[data-accent='amber'] {
+  --primary: #b45309;
+  --primary-hover: #92400e;
+  --primary-soft: rgba(180, 83, 9, 0.13);
+  --primary-text: #b45309;
+  --ring: #b45309;
+}
+
+:root[data-theme='dark'][data-accent='indigo'] {
+  --primary-text: #a5b4fc;
+}
+
+:root[data-theme='dark'][data-accent='blue'] {
+  --primary-text: #93c5fd;
+}
+
+:root[data-theme='dark'][data-accent='emerald'] {
+  --primary-text: #6ee7b7;
+}
+
+:root[data-theme='dark'][data-accent='rose'] {
+  --primary-text: #fda4af;
+}
+
+:root[data-theme='dark'][data-accent='amber'] {
+  --primary-text: #fcd34d;
+}
+
+/* Distinct Category Colors (Light & Dark WCAG AA safe) */
+.cat-color-indigo { --cat-bg: rgba(79, 70, 229, 0.13); --cat-fg: #4338ca; --cat-border: rgba(79, 70, 229, 0.35); --cat-solid: #4f46e5; }
+.cat-color-blue { --cat-bg: rgba(37, 99, 235, 0.13); --cat-fg: #1d4ed8; --cat-border: rgba(37, 99, 235, 0.35); --cat-solid: #2563eb; }
+.cat-color-emerald { --cat-bg: rgba(4, 120, 87, 0.13); --cat-fg: #047857; --cat-border: rgba(4, 120, 87, 0.35); --cat-solid: #047857; }
+.cat-color-rose { --cat-bg: rgba(190, 18, 60, 0.13); --cat-fg: #be123c; --cat-border: rgba(190, 18, 60, 0.35); --cat-solid: #be123c; }
+.cat-color-amber { --cat-bg: rgba(180, 83, 9, 0.13); --cat-fg: #b45309; --cat-border: rgba(180, 83, 9, 0.35); --cat-solid: #b45309; }
+.cat-color-violet { --cat-bg: rgba(109, 40, 217, 0.13); --cat-fg: #6d28d9; --cat-border: rgba(109, 40, 217, 0.35); --cat-solid: #6d28d9; }
+.cat-color-cyan { --cat-bg: rgba(14, 116, 144, 0.13); --cat-fg: #0e7490; --cat-border: rgba(14, 116, 144, 0.35); --cat-solid: #0e7490; }
+.cat-color-slate { --cat-bg: rgba(71, 85, 105, 0.14); --cat-fg: #334155; --cat-border: rgba(71, 85, 105, 0.35); --cat-solid: #475569; }
+
+:root[data-theme='dark'] .cat-color-indigo { --cat-fg: #a5b4fc; }
+:root[data-theme='dark'] .cat-color-blue { --cat-fg: #93c5fd; }
+:root[data-theme='dark'] .cat-color-emerald { --cat-fg: #6ee7b7; }
+:root[data-theme='dark'] .cat-color-rose { --cat-fg: #fda4af; }
+:root[data-theme='dark'] .cat-color-amber { --cat-fg: #fcd34d; }
+:root[data-theme='dark'] .cat-color-violet { --cat-fg: #c4b5fd; }
+:root[data-theme='dark'] .cat-color-cyan { --cat-fg: #67e8f9; }
+:root[data-theme='dark'] .cat-color-slate { --cat-fg: #cbd5e1; }

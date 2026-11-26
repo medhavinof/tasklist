@@ -1,0 +1,220 @@
+.loading-card {
+  max-width: 420px;
+  padding: 32px;
+  text-align: center;
+  margin-top: 48px;
+}
+
+.auth-card {
+  max-width: 460px;
+  padding: 28px;
+  margin-top: 24px;
+}
+
+.brand-header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.brand-title {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.brand-subtitle {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+/* Local Accounts Switcher */
+.local-accounts-box {
+  margin-bottom: 18px;
+  padding: 12px;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: var(--surface-subtle);
+}
+
+.local-accounts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.local-accounts-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.local-accounts-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.local-accounts-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.account-switcher-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px 5px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  max-width: 100%;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.account-switcher-chip:hover {
+  border-color: var(--primary);
+}
+
+.account-switcher-chip.is-selected {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  color: var(--primary-text);
+}
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 4px;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 18px;
+}
+
+.tab-btn {
+  border: 0;
+  background: transparent;
+  padding: 9px 12px;
+  border-radius: 7px;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.tab-btn.is-active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.register-extra {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth-links-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.recover-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.recover-title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.recover-question-box {
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+}
+
+.recover-question-text {
+  margin: 4px 0 0;
+  font-weight: 600;
+}
+
+.recover-step-2 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recover-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Lock Screen */
+.lock-card {
+  text-align: center;
+}
+
+.lock-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.lock-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary-text);
+  margin-bottom: 2px;
+}
+
+.lock-name {
+  margin: 4px 0 0;
+  font-size: 1.15rem;
+}
+
+.lock-desc {
+  margin-bottom: 16px;
+}
+
+.lock-card .field {
+  text-align: left;
+}
+
+.lock-footer-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
