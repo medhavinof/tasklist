@@ -1227,4 +1227,43 @@ describe('Simple Task List API', () => {
 
     assert.ok(visited.size >= 15, `Expected at least 15 modular JS files, got ${visited.size}`);
   });
+
+  it('serves embedded production assets when embeddedAssets option is configured', async () => {
+    const db = createDatabase(':memory:');
+    const embeddedApp = createApp(db, {
+      embeddedAssets: {
+        'public/index.html': Buffer.from('<!DOCTYPE html><html><body>Prod</body></html>'),
+        'public/styles.css': Buffer.from('body{margin:0}'),
+        'public/app.js': Buffer.from('console.log("prod");'),
+      },
+    });
+    const server = await new Promise((resolve) => {
+      const s = embeddedApp.listen(0, '127.0.0.1', () => resolve(s));
+    });
+    const { port } = server.address();
+    const baseUrl = `http://127.0.0.1:${port}`;
+
+    try {
+      const htmlRes = await fetch(`${baseUrl}/`);
+      assert.equal(htmlRes.status, 200);
+      assert.match(htmlRes.headers.get('content-type'), /text\/html/);
+      assert.equal(await htmlRes.text(), '<!DOCTYPE html><html><body>Prod</body></html>');
+
+      const cssRes = await fetch(`${baseUrl}/styles.css`);
+      assert.equal(cssRes.status, 200);
+      assert.match(cssRes.headers.get('content-type'), /text\/css/);
+      assert.equal(await cssRes.text(), 'body{margin:0}');
+
+      const jsRes = await fetch(`${baseUrl}/app.js`);
+      assert.equal(jsRes.status, 200);
+      assert.match(jsRes.headers.get('content-type'), /application\/javascript/);
+      assert.equal(await jsRes.text(), 'console.log("prod");');
+
+      const apiRes = await fetch(`${baseUrl}/api/auth/accounts`);
+      assert.equal(apiRes.status, 200);
+    } finally {
+      await new Promise((resolve) => server.close(resolve));
+      db.close();
+    }
+  });
 });

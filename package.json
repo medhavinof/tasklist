@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
+    "build": "node scripts/build.mjs",
+    "build:bundle": "node scripts/build.mjs --bundle-only",
     "test": "node --test tests/*.test.js"
   },
   "keywords": [
@@ -17,5 +19,9 @@
   "license": "MIT",
   "dependencies": {
     "express": "^5.3.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "postject": "^1.0.0-alpha.6"
   }
 }

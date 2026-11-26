@@ -67,6 +67,20 @@ Pastikan **Node.js** versi terbaru yang mendukung modul `node:sqlite` sudah terp
    npm test
    ```
 
+5. **Buat production build standalone (`.exe` tanpa perlu Node.js di PC target)**
+   ```bash
+   npm run build
+   ```
+   Hasil build utama akan tersedia di `dist/SimpleTaskList.exe` (atau `npm run build:bundle` untuk hanya menghasilkan bundle `dist/build/`).
+
+### Instalasi & Penggunaan Build Produksi (`SimpleTaskList.exe`)
+1. Jalankan `npm run build` di mesin pengembangan untuk menghasilkan `dist/SimpleTaskList.exe`.
+2. Salin **1 file `SimpleTaskList.exe`** ke folder mana saja di komputer Windows target (tidak perlu menginstal Node.js, npm, SQLite, atau tools tambahan lainnya).
+3. Klik ganda `SimpleTaskList.exe`:
+   - Server akan berjalan dan otomatis membuka browser ke URL aplikasi (default `http://localhost:3000`, atau otomatis pindah ke port kosong berikutnya jika sedang dipakai).
+   - Database lokal tersimpan secara portable di subfolder `./data/todo.db` tepat di sebelah file `SimpleTaskList.exe`.
+   - Untuk mode headless / server tanpa membuka browser otomatis, jalankan dengan argumen `--no-open` atau variabel lingkungan `NO_OPEN=1`.
+
 ### Variabel Lingkungan (Opsional)
 - `PORT`: Port server HTTP (default: `3000`).
 - `DB_PATH`: Lokasi file database SQLite (default: `data/todo.db`).
